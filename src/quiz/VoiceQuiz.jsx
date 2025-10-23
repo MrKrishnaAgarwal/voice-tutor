@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { loadProgress, saveProgress } from '../utils/progress'
+import { useContext } from 'react'
+import { AuthContext } from '../auth/AuthProvider'
 
 export default function VoiceQuiz({ lessonPath, lang }){
   const [lesson, setLesson] = useState(null)
@@ -7,7 +9,8 @@ export default function VoiceQuiz({ lessonPath, lang }){
   const [status, setStatus] = useState('idle')
   const [transcript, setTranscript] = useState('')
   const [score, setScore] = useState(0)
-  const userId = 'anon'
+  const { user } = useContext(AuthContext)
+  const userId = user ? user.id : 'anon'
   const recognitionRef = useRef(null)
 
   useEffect(() => {
@@ -66,6 +69,9 @@ export default function VoiceQuiz({ lessonPath, lang }){
       const next = stepIndex+1
       setStepIndex(next)
       saveProgress(userId, { ...loadProgress(userId), [lesson.id]: { stepIndex: next, score } })
+      if(user && user.id){
+        saveProgressRemote(user.id, lesson.id, next, score).catch(console.error)
+      }
     }else if(step.type === 'expect-answer'){
       const q = typeof step.text === 'object' ? (step.text[lang.startsWith('hi') ? 'hi' : 'en']) : (step.text || 'Please answer')
       speak(q)
@@ -87,6 +93,9 @@ export default function VoiceQuiz({ lessonPath, lang }){
       const next = stepIndex+1
       setStepIndex(next)
       saveProgress(userId, { ...loadProgress(userId), [lesson.id]: { stepIndex: next, score: score+1 } })
+      if(user && user.id){
+        saveProgressRemote(user.id, lesson.id, next, score+1).catch(console.error)
+      }
     } else {
       const hint = typeof step.hint === 'object' ? (step.hint[key] || '') : step.hint
       speak(hint || (lang.startsWith('hi') ? 'कोशिश करें' : 'Try again'))

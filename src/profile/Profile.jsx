@@ -73,6 +73,8 @@ export default function Profile({ progress }){
                       setAvatar(newAvatar)
                       // optimistic update the global user so profile shows immediately
                       setUser({ ...user, displayName: updated.user_metadata.full_name || name, avatarUrl: newAvatar })
+                      // save to remote DB as well (users table)
+                      try{ await (await import('../utils/db')).saveProfileRemote(user.id, user.email, name, newAvatar) }catch(e){ console.error(e) }
                     }
                     // refresh context user in case Netlify identity needs it
                     refreshUser()

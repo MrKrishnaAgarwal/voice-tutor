@@ -1,0 +1,1 @@
+async function i(e,n,t,o){return(await fetch("/.netlify/functions/saveProfile",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:e,email:n,displayName:t,avatarUrl:o})})).json()}export{i as saveProfileRemote};
