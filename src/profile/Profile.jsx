@@ -16,7 +16,11 @@ export default function Profile({ progress }){
       {user ? (
         <div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            {user.avatarUrl ? <img src={user.avatarUrl} alt="avatar" style={{ width:56, height:56, borderRadius:999 }} /> : <div style={{ width:56, height:56, borderRadius:999, background:'#f1f5f9' }} />}
+            {editing ? (
+              (avatar || user.avatarUrl) ? <img src={avatar || user.avatarUrl} alt="avatar" style={{ width:56, height:56, borderRadius:999 }} /> : <div style={{ width:56, height:56, borderRadius:999, background:'#f1f5f9' }} />
+            ) : (
+              user.avatarUrl ? <img src={user.avatarUrl} alt="avatar" style={{ width:56, height:56, borderRadius:999 }} /> : <div style={{ width:56, height:56, borderRadius:999, background:'#f1f5f9' }} />
+            )}
             <div style={{ flex: 1 }}>
               <p style={{ margin:0, fontWeight:700 }}>{user.displayName || user.email}</p>
               <div>
@@ -61,9 +65,18 @@ export default function Profile({ progress }){
                   if(!window.netlifyIdentity) return
                   const current = window.netlifyIdentity.currentUser()
                   if(!current) return
-                  await current.update({ user_metadata: { full_name: name, avatar_url: avatar } })
-                  refreshUser()
-                  setEditing(false)
+                  try{
+                    const updated = await current.update({ user_metadata: { full_name: name, avatar_url: avatar } })
+                    // updated may contain the new user metadata - update local preview and refresh context
+                    if(updated && updated.user_metadata){
+                      setAvatar(updated.user_metadata.avatar_url || avatar)
+                    }
+                    // refresh context user
+                    refreshUser()
+                    setEditing(false)
+                  }catch(err){
+                    console.error('Failed to update user metadata', err)
+                  }
                 }}>Save</button>
               </div>
             </div>
