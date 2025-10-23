@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { AuthContext } from '../auth/AuthProvider'
 
 export default function Profile({ progress }){
-  const { user, refreshUser } = useContext(AuthContext)
+  const { user, refreshUser, setUser } = useContext(AuthContext)
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState('')
@@ -69,9 +69,12 @@ export default function Profile({ progress }){
                     const updated = await current.update({ user_metadata: { full_name: name, avatar_url: avatar } })
                     // updated may contain the new user metadata - update local preview and refresh context
                     if(updated && updated.user_metadata){
-                      setAvatar(updated.user_metadata.avatar_url || avatar)
+                      const newAvatar = updated.user_metadata.avatar_url || avatar
+                      setAvatar(newAvatar)
+                      // optimistic update the global user so profile shows immediately
+                      setUser({ ...user, displayName: updated.user_metadata.full_name || name, avatarUrl: newAvatar })
                     }
-                    // refresh context user
+                    // refresh context user in case Netlify identity needs it
                     refreshUser()
                     setEditing(false)
                   }catch(err){
