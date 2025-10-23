@@ -1,0 +1,9 @@
+{
+  "id": "math-linear-1",
+  "title": { "en": "Linear equations - basic", "hi": "रेखीय समीकरण - बुनियादी" },
+  "subject": "Math",
+  "steps": [
+    { "type": "speak", "text": { "en": "What is 5 plus 2?", "hi": "5 में 2 जोड़ने पर क्या होता है?" } },
+    { "type": "expect-answer", "answers": { "en": ["7", "seven"], "hi": ["7", "सात"] }, "hint": { "en": "Add the numbers: 5 plus 2 is 7.", "hi": "अंकों को जोड़ें: 5 + 2 = 7" } }
+  ]
+}
