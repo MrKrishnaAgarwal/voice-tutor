@@ -1,6 +1,10 @@
-body{ font-family: Inter, system-ui, Arial, sans-serif; margin: 0; padding: 0; background: #f7fafc; color:#111827 }
-.app{ max-width:780px; margin: 28px auto; padding: 18px }
-header{ display:flex; justify-content:space-between; align-items:center }
-.controls{ margin-top:12px }
-.controls button{ margin-right:8px; padding:8px 12px }
-.transcript .box{ border:1px solid #ddd; background:#fff; padding:12px; min-height:48px }
+.app{ font-family: Inter, system-ui, Arial, sans-serif; margin: 0 auto; padding: 20px; max-width:900px; color:#0f172a }
+header{ display:flex; justify-content:space-between; align-items:center; padding:12px 0 }
+header h1{ margin:0; font-size:20px }
+.toolbar{ display:flex; gap:12px; align-items:center }
+.card{ background:#fff; border-radius:8px; padding:14px; box-shadow:0 1px 4px rgba(15,23,42,0.06); margin-bottom:12px }
+.controls{ margin-top:10px }
+.controls button{ margin-right:8px; padding:8px 12px; border-radius:6px; border:1px solid #e6e6e6; background:#fff }
+.transcript .box{ border:1px solid #eef2f7; background:#fff; padding:12px; min-height:48px }
+.profile-badges{ display:flex; gap:8px; margin-top:8px }
+.badge{ background:linear-gradient(135deg,#fef3c7,#fde68a); padding:6px 10px; border-radius:999px; font-weight:600 }

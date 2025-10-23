@@ -1,21 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useContext } from 'react'
+import { AuthContext } from './AuthProvider'
 
 export default function NetlifyAuth(){
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    if(!window.netlifyIdentity) return
-    const id = window.netlifyIdentity
-    id.on('init', user => setUser(user))
-    id.on('login', user => setUser(user))
-    id.on('logout', () => setUser(null))
-    id.init()
-    return () => {
-      id.off('init')
-      id.off('login')
-      id.off('logout')
-    }
-  }, [])
+  const { user } = useContext(AuthContext)
 
   function openModal(){
     if(window.netlifyIdentity) window.netlifyIdentity.open()
@@ -23,16 +10,14 @@ export default function NetlifyAuth(){
 
   return (
     <div className="netlify-auth">
-      <h3>Auth (email)</h3>
       {user ? (
         <div>
-          <p>Signed in as {user.email}</p>
+          <small>{user.email}</small>
           <button onClick={() => window.netlifyIdentity.logout()}>Logout</button>
         </div>
       ) : (
         <div>
-          <p>Sign up / Login with email</p>
-          <button onClick={openModal}>Open Sign-in</button>
+          <button onClick={openModal}>Sign in / Sign up</button>
         </div>
       )}
     </div>
