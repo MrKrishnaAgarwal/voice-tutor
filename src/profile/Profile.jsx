@@ -10,12 +10,15 @@ export default function Profile({ progress }){
     <div className="card">
       <h3>Profile</h3>
       {user ? (
-        <div>
-          <p><strong>{user.email}</strong></p>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          {user.avatarUrl ? <img src={user.avatarUrl} alt="avatar" style={{ width:56, height:56, borderRadius:999 }} /> : <div style={{ width:56, height:56, borderRadius:999, background:'#f1f5f9' }} />}
           <div>
-            <small>Badges</small>
-            <div className="profile-badges">
-              {badges.length ? badges.map(b => <span key={b} className="badge">{b}</span>) : <small>No badges yet</small>}
+            <p style={{ margin:0, fontWeight:700 }}>{user.displayName || user.email}</p>
+            <div>
+              <small>Badges</small>
+              <div className="profile-badges">
+                {badges.length ? badges.map(b => <span key={b} className="badge">{b}</span>) : <small>No badges yet</small>}
+              </div>
             </div>
           </div>
         </div>

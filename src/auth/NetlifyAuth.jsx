@@ -11,8 +11,9 @@ export default function NetlifyAuth(){
   return (
     <div className="netlify-auth">
       {user ? (
-        <div>
-          <small>{user.email}</small>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {user.avatarUrl ? <img src={user.avatarUrl} alt="avatar" style={{ width:28, height:28, borderRadius:999 }} /> : null}
+          <small>{user.displayName || user.email}</small>
           <button onClick={() => window.netlifyIdentity.logout()}>Logout</button>
         </div>
       ) : (

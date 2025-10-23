@@ -8,8 +8,20 @@ export default function AuthProvider({ children }){
   useEffect(() => {
     if(!window.netlifyIdentity) return
     const id = window.netlifyIdentity
-    id.on('init', u => setUser(u))
-    id.on('login', u => setUser(u))
+    function normalize(u){
+      if(!u) return null
+      // netlify identity user contains user_metadata with full_name and avatar_url
+      const meta = u.user_metadata || {}
+      return {
+        email: u.email,
+        id: u.id,
+        displayName: meta.full_name || meta.display_name || u.email,
+        avatarUrl: meta.avatar_url || meta.avatar || null
+      }
+    }
+
+    id.on('init', u => setUser(normalize(u)))
+    id.on('login', u => setUser(normalize(u)))
     id.on('logout', () => setUser(null))
     id.init()
     return () => {
