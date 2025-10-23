@@ -35,3 +35,7 @@ Netlify Identity setup (email auth)
 
 Notes on local testing:
 - Netlify Identity requires the site to be served from a Netlify deployment for full functionality. During local dev, the widget will initialize but login may not persist. Use the deployed Netlify site to test email signup flows.
+
+Image uploads (serverless function)
+- There's a demo Netlify Function at `netlify/functions/upload.js` that accepts a POST with a data URL and returns a URL. For simplicity it returns the same data URL; in production replace this with a function that uploads to S3/Cloudinary and returns a public URL.
+- The profile editor in the app uses this function when you pick a file.

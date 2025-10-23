@@ -6,6 +6,7 @@ export default function Profile({ progress }){
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState('')
+  const [uploading, setUploading] = useState(false)
   const lessons = progress || {}
   const badges = Object.keys(lessons).filter(k => (lessons[k].score || 0) >= 1)
 
@@ -35,7 +36,26 @@ export default function Profile({ progress }){
               <label>Display name</label>
               <div><input value={name} onChange={e => setName(e.target.value)} /></div>
               <label>Avatar URL</label>
-              <div><input value={avatar} onChange={e => setAvatar(e.target.value)} /></div>
+              <div><input value={avatar} onChange={e => setAvatar(e.target.value)} placeholder="Or upload an image" /></div>
+              <div style={{ marginTop:8 }}>
+                <input type="file" accept="image/*" onChange={async e => {
+                  const f = e.target.files && e.target.files[0]
+                  if(!f) return
+                  setUploading(true)
+                  const reader = new FileReader()
+                  reader.onload = async () => {
+                    const dataUrl = reader.result
+                    // call Netlify function
+                    try{
+                      const res = await fetch('/.netlify/functions/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: f.name, data: dataUrl }) })
+                      const j = await res.json()
+                      if(j.url){ setAvatar(j.url) }
+                    }catch(err){ console.error(err) }
+                    setUploading(false)
+                  }
+                  reader.readAsDataURL(f)
+                }} /> {uploading ? 'Uploading...' : null}
+              </div>
               <div style={{ marginTop:8 }}>
                 <button onClick={async () => {
                   if(!window.netlifyIdentity) return
