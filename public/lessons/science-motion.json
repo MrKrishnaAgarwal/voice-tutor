@@ -1,0 +1,9 @@
+{
+  "id": "sci-motion-1",
+  "title": { "en": "Motion - basic", "hi": "गति - बुनियादी" },
+  "subject": "Science",
+  "steps": [
+    { "type": "speak", "text": { "en": "Which force pulls objects toward the Earth?", "hi": "कौन-सी शक्ति वस्तुओं को पृथ्वी की ओर खींचती है?" } },
+    { "type": "expect-answer", "answers": { "en": ["gravity"], "hi": ["गुरुत्वाकर्षण", "गुरुत्व"] }, "hint": { "en": "It's called gravity.", "hi": "इसे गुरुत्वाकर्षण कहते हैं।" } }
+  ]
+}
