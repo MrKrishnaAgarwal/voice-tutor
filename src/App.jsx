@@ -35,6 +35,10 @@ export default function App(){
         <VoiceQuiz lessonPath={'/lessons/math-linear-equations.json'} lang={lang} />
       </div>
 
+      <div className="card">
+        <VoiceQuiz lessonPath={'/lessons/science-motion.json'} lang={lang} />
+      </div>
+
       <footer style={{ marginTop: 12 }}>
         <small>Deployed on Netlify — email auth enabled.</small>
       </footer>

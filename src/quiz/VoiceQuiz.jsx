@@ -19,6 +19,8 @@ export default function VoiceQuiz({ lessonPath, lang }){
   // track whether recognition is currently active to avoid repeated start() calls
   const isListeningRef = useRef(false)
   const questionMode = lesson && Array.isArray(lesson.questions)
+  // track which lesson-step/question we've already auto-spoken to avoid repeats
+  const spokenRef = useRef(new Set())
 
   useEffect(() => {
     setLesson(null)
@@ -45,10 +47,35 @@ export default function VoiceQuiz({ lessonPath, lang }){
   // When a lesson with questions is loaded, automatically start asking the first question
   useEffect(() => {
     if(lesson && Array.isArray(lesson.questions)){
-      // small timeout to let UI settle
-      setTimeout(() => askQuestion(questionIndex), 400)
+      // ask the current question when lesson loads or questionIndex changes
+      // small timeout to let UI settle. Guard so we only auto-ask once per question.
+      const key = `${lesson.id}:q:${questionIndex}`
+      if(!spokenRef.current.has(key)){
+        spokenRef.current.add(key)
+        setTimeout(() => askQuestion(questionIndex), 400)
+      }
     }
   }, [lesson])
+
+  // Auto-speak step-based lessons: speak the current 'speak' step when it becomes active
+  useEffect(() => {
+    if(!lesson || !Array.isArray(lesson.steps)) return
+    const step = lesson.steps[stepIndex]
+    if(!step) return
+    if(step.type === 'speak'){
+      const key = `${lesson.id}:s:${stepIndex}`
+      if(!spokenRef.current.has(key)){
+        spokenRef.current.add(key)
+        // ensure recognition is not running while speaking
+        if(recognitionRef.current && isListeningRef.current){
+          try{ recognitionRef.current.abort() }catch(e){ /* ignore */ }
+        }
+        const t = (typeof step.text === 'object') ? (step.text[currentLang] || step.text.en || '') : (step.text || '')
+        // small delay so UI can render before TTS
+        setTimeout(() => speak(t), 300)
+      }
+    }
+  }, [lesson, stepIndex])
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -259,14 +286,40 @@ export default function VoiceQuiz({ lessonPath, lang }){
     return String(field)
   }
 
+  // Derive the current prompt text for display: question-mode uses questions[q].text;
+  // step-mode uses the current speak step or the previous speak step when on expect-answer.
+  const currentPrompt = () => {
+    if(!lesson) return ''
+    if(questionMode){
+      const q = lesson.questions[questionIndex]
+      if(!q) return ''
+      return getText(q.text)
+    }
+    const step = lesson.steps[stepIndex]
+    if(!step) return ''
+    if(step.type === 'speak') return getText(step.text)
+    if(step.type === 'expect-answer'){
+      // prefer step.text if present, otherwise reuse previous speak
+      if(step.text) return getText(step.text)
+      const prev = lesson.steps[stepIndex - 1]
+      if(prev && prev.type === 'speak') return getText(prev.text)
+      return ''
+    }
+    return ''
+  }
+
   return (
     <div className="voice-quiz">
       {/* Use getText to avoid rendering the whole object (fixes React error) */}
       <h2>{getText(lesson.title)}</h2>
       <p>Score: {score}</p>
+      <div className="current-prompt" style={{ margin: '8px 0', padding: 8, background: '#fafafa', borderRadius: 6 }}>
+        <strong>Current prompt:</strong>
+        <div style={{ marginTop: 6 }}>{currentPrompt() || <em>Not available</em>}</div>
+      </div>
       <div className="quiz-controls">
-        <button onClick={handleNext}>Next</button>
-        <button onClick={startListen}>Listen</button>
+        <button onClick={handleNext} disabled={status === 'starting' || status === 'listening'}>Next</button>
+        <button onClick={startListen} disabled={status === 'starting' || status === 'listening'}>Listen</button>
       </div>
 
       <div className="transcript">
