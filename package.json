@@ -11,7 +11,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
   "howler": "^2.2.3",
-  "cloudinary": "^1.32.0",
+  "cloudinary": "^2.7.0",
   "@aws-sdk/client-s3": "^3.382.0"
   , "@supabase/supabase-js": "^2.28.0"
   },
